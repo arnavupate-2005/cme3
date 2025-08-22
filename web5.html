@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aditya-L1 • UV & CME Dashboard</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:#111831cc;
+    --muted:#aab3cf;
+    --text:#eaf0ff;
+    --accent:#7c9bff;
+    --accent2:#8ef0c8;
+    --danger:#ff6b6b;
+    --shadow: 0 20px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03);
+    --radius: 20px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #15213d 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #0f2240 0%, transparent 60%),
+      linear-gradient(180deg, #0b0f1a 0%, #0b1020 100%);
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 18px 80px}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+  .logo-img{width:80px;height:80px;object-fit:contain;background:#fff;
+    border-radius:50%;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,.35);}
+  h1{margin:0;font-size:clamp(22px,3.2vw,34px)}
+  .sub{color:var(--muted);font-size:14px;margin-top:2px}
+  .cards{display:grid;gap:16px;grid-template-columns: repeat(12,1fr)}
+  .card{
+    grid-column: span 12;
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:20px;
+  }
+  @media(min-width:950px){
+    .card--wide{grid-column: span 8}
+    .card--side{grid-column: span 4}
+  }
+  h2{margin:.1rem 0 .6rem;font-size:clamp(18px,2.6vw,24px)}
+  p{line-height:1.6;color:#d8def7}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,#28335a,#1a2242);
+    color:#cfe0ff;padding:8px 12px;border-radius:999px;font-size:12px;
+    border:1px solid rgba(255,255,255,.06)
+  }
+  .btn{padding:12px 16px;border-radius:14px;font-weight:600;
+    border:1px solid rgba(255,255,255,.08);
+    background: linear-gradient(180deg, #2b3a7a, #1e2a59);
+    color:#fff;cursor:pointer;transition: transform .15s ease;}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.secondary{background:linear-gradient(180deg,#226a57,#174a3f)}
+  .btn.danger{background:linear-gradient(180deg,#7a2b2b,#532020)}
+
+  /* Tabs */
+  .tabs{margin-top:16px}
+  .tab-buttons{display:flex;gap:10px;flex-wrap:wrap}
+  .tab-buttons .seg{
+    padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
+    background:#121a34; color:#cfe0ff; cursor:pointer; font-weight:600;
+  }
+  .tab-buttons .seg.active{background:linear-gradient(135deg,#2b3a7a,#1e2a59);color:#fff}
+  .tab-content{margin-top:14px}
+  .panel{display:none;text-align:center}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+  img.display-img{max-width:100%;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.35);}
+
+  /* Upload preview grid */
+  .drop{border:2px dashed rgba(255,255,255,.12);border-radius:16px;
+    padding:18px;text-align:center;color:#cfe0ff;background:rgba(255,255,255,.02)}
+  .grid{display:grid;gap:12px;margin-top:14px;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .thumb{position:relative;overflow:hidden;border-radius:14px;
+    background:#0e1530;border:1px solid rgba(255,255,255,.06)}
+  .thumb img{width:100%;height:140px;object-fit:cover}
+  .thumb .cap{position:absolute;left:0;right:0;bottom:0;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.6));
+    color:#fff;padding:8px 10px;font-size:12px}
+
+  /* CME params */
+  .params{margin-top:18px;text-align:left}
+  .param{display:flex;justify-content:space-between;padding:6px 0;
+    border-bottom:1px solid rgba(255,255,255,.08)}
+  .alert-box{margin-top:18px;padding:12px;border-radius:12px;
+    font-weight:600;text-align:center;background:rgba(255,255,255,.08);color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo.jpg.jpeg" alt="Aditya L1 Logo" class="logo-img">
+    <div>
+      <h1>Aditya-L1 • Solar UV & CME Explorer</h1>
+      <div class="sub">Explore CME parameters, harmfulness alerts, and Sun observations</div>
+    </div>
+  </header>
+
+  <section class="cards">
+    <!-- Main dashboard -->
+    <article class="card card--wide">
+      <div class="pill">Mission • Aditya-L1 (ISRO)</div>
+      <h2>Dashboard</h2>
+      <p>Upload, view, and analyze ultraviolet images and CME graphs. This tool combines Sun observations with CME parameter tracking.</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button class="seg active" id="tab-images">Sun Images</button>
+          <button class="seg" id="tab-graphs">UV Graphs</button>
+        </div>
+        <div class="tab-content">
+          <!-- Sun Images tab -->
+          <div class="panel active" id="panel-images">
+            <div class="drop" id="dropImages">
+              <p><strong>Upload Sun Images</strong></p>
+              <input id="inputImages" type="file" accept="image/*" multiple hidden />
+            </div>
+            <div class="grid" id="gridImages"></div>
+            <h2>Processed FITS Grid</h2>
+            <img src="fits_grid.png" alt="FITS Grid" class="display-img">
+          </div>
+
+          <!-- Graphs tab -->
+          <div class="panel" id="panel-graphs">
+            <div class="drop" id="dropGraphs">
+              <p><strong>Upload UV Graphs</strong></p>
+              <input id="inputGraphs" type="file" accept="image/*" multiple hidden />
+            </div>
+            <div class="grid" id="gridGraphs"></div>
+            <h2>Summary of CME Detection</h2>
+            <img src="summary.png" alt="Summary Graph" class="display-img">
+          </div>
+        </div>
+      </div>
+
+      <!-- CME Parameters -->
+      <div class="params">
+        <h2>CME Parameters</h2>
+        <div class="param"><span>Time</span><span id="p-time">--</span></div>
+        <div class="param"><span>Speed</span><span id="p-speed">--</span></div>
+        <div class="param"><span>Acceleration</span><span id="p-acc">--</span></div>
+        <div class="param"><span>Angular Width</span><span id="p-width">--</span></div>
+        <div class="param"><span>Mass</span><span id="p-mass">--</span></div>
+        <div class="param"><span>Kinetic Energy</span><span id="p-energy">--</span></div>
+        <div class="param"><span>Brightness</span><span id="p-bright">--</span></div>
+        <div class="param"><span>Magnetic Field</span><span id="p-mag">--</span></div>
+      </div>
+
+      <!-- Alert -->
+      <div id="alertBox" class="alert-box">No data available</div>
+    </article>
+
+    <!-- Info side card -->
+    <aside class="card card--side">
+      <div class="pill">Background</div>
+      <h2>Coronal Mass Ejections (CMEs)</h2>
+      <p>CMEs are huge expulsions of plasma and magnetic fields from the Sun’s corona. They can travel at millions of km/h, disturbing space weather, damaging satellites, and even impacting power grids on Earth.</p>
+      <h2>Aditya-L1 Satellite</h2>
+      <p><strong>Aditya-L1</strong> is India’s first solar observatory mission placed at the Lagrange point L1 (~1.5 million km from Earth). It continuously monitors the Sun’s atmosphere, ultraviolet radiation, and CMEs to improve space-weather forecasting.</p>
+    </aside>
+  </section>
+</div>
+
+<script>
+  // Tabs switching
+  const tabImages=document.getElementById('tab-images');
+  const tabGraphs=document.getElementById('tab-graphs');
+  const panelImages=document.getElementById('panel-images');
+  const panelGraphs=document.getElementById('panel-graphs');
+  function activate(tab){
+    const isImages=tab.id==='tab-images';
+    tabImages.classList.toggle('active',isImages);
+    tabGraphs.classList.toggle('active',!isImages);
+    panelImages.classList.toggle('active',isImages);
+    panelGraphs.classList.toggle('active',!isImages);
+  }
+  tabImages.onclick=()=>activate(tabImages);
+  tabGraphs.onclick=()=>activate(tabGraphs);
+
+  // Upload previews
+  function setupDrop(dropEl,inputEl,gridEl){
+    dropEl.onclick=()=>inputEl.click();
+    inputEl.onchange=(e)=>handleFiles(e.target.files,gridEl);
+  }
+  function handleFiles(files,grid){
+    [...files].forEach(f=>{
+      const url=URL.createObjectURL(f);
+      const div=document.createElement('div');
+      div.className='thumb';
+      div.innerHTML=`<img src="${url}" alt="${f.name}"><div class="cap">${f.name}</div>`;
+      grid.prepend(div);
+    });
+  }
+  setupDrop(document.getElementById('dropImages'),document.getElementById('inputImages'),document.getElementById('gridImages'));
+  setupDrop(document.getElementById('dropGraphs'),document.getElementById('inputGraphs'),document.getElementById('gridGraphs'));
+</script>
+</body>
+</html>
